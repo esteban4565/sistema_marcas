@@ -18,19 +18,22 @@ class Profile(models.Model):
 
 class Personal(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='personal')
+    identificacion = models.CharField(max_length=20, unique=True, blank=True, null=True)
     nombre = models.CharField(max_length=100)
-    apellido1 = models.CharField(max_length=100)
-    apellido2 = models.CharField(max_length=100, blank=True, null=True)
-    fecha_nacimiento = models.DateField()
-    puesto = models.CharField(max_length=100)
-    departamento = models.CharField(max_length=100)
-    titulo = models.CharField(max_length=10)
+    apellido = models.CharField(max_length=100, blank=True, default='')
+    email = models.EmailField(blank=True)
+    telefono = models.CharField(max_length=15, blank=True)
+    tipo = models.CharField(max_length=20, choices=[('Docente', 'Docente'), ('Administrativo', 'Administrativo')], blank=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+    puesto = models.CharField(max_length=100, blank=True)
+    departamento = models.CharField(max_length=100, blank=True)
+    titulo = models.CharField(max_length=10, blank=True)
     HORARIO_CHOICES = [
         ('Diurno', 'Diurno'),
         ('Nocturno', 'Nocturno'),
         ('Diurno_Nocturno', 'Diurno_Nocturno'),
     ]
-    horario = models.CharField(max_length=20, choices=HORARIO_CHOICES)
+    horario = models.CharField(max_length=20, choices=HORARIO_CHOICES, blank=True)
     ESTADO_CHOICES = [
         ('activo', 'Activo'),
         ('desactivo', 'Desactivo'),
@@ -38,7 +41,7 @@ class Personal(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido1} - {self.puesto}"
+        return f"{self.nombre} {self.apellido} - {self.tipo}"
 
 class Estudiante(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='estudiante')
