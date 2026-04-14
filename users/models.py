@@ -29,8 +29,50 @@ class Personal(models.Model):
     ]
     puesto = models.CharField(max_length=100, choices=PUESTO_CHOICES)
     fecha_nacimiento = models.DateField(blank=True, null=True)
-    departamento = models.CharField(max_length=100, blank=True)
-    titulo = models.CharField(max_length=10, blank=True)
+    DEPARTAMENTO_CHOICES = [
+        ('AGENTE DE SEGURIDAD', 'AGENTE DE SEGURIDAD'),
+        ('AUX. ADMINITRATIVO', 'AUX. ADMINITRATIVO'),
+        ('COORDINACIONES', 'COORDINACIONES'),
+        ('DEP. AUXILIARES', 'DEP. AUXILIARES'),
+        ('DEP. CIENCIAS', 'DEP. CIENCIAS'),
+        ('DEP. COMEDOR', 'DEP. COMEDOR'),
+        ('DEP. EDUCACIÓN FÍSICA', 'DEP. EDUCACIÓN FÍSICA'),
+        ('DEP. EMPREND. E INNOVACIÓN', 'DEP. EMPREND. E INNOVACIÓN'),
+        ('DEP. ESPAÑOL', 'DEP. ESPAÑOL'),
+        ('DEP. EST. SOCIALES', 'DEP. EST. SOCIALES'),
+        ('DEP. ÉTICA Y PSICOLOGÍA', 'DEP. ÉTICA Y PSICOLOGÍA'),
+        ('DEP. FÍSICA, QUÍMICA Y BIOLOGÍA', 'DEP. FÍSICA, QUÍMICA Y BIOLOGÍA'),
+        ('DEP. FRANCÉS ACADÉMICO', 'DEP. FRANCÉS ACADÉMICO'),
+        ('DEP. INGLÉS ACADÉMICO', 'DEP. INGLÉS ACADÉMICO'),
+        ('DEP. INGLÉS ESPECIALIZADO', 'DEP. INGLÉS ESPECIALIZADO'),
+        ('DEP. LIMPIEZA Y ASEO', 'DEP. LIMPIEZA Y ASEO'),
+        ('DEP. MATEMÁTICAS', 'DEP. MATEMÁTICAS'),
+        ('DEP. MÚSICA', 'DEP. MÚSICA'),
+        ('DEP. ORIENTACIÓN', 'DEP. ORIENTACIÓN'),
+        ('DEP. RECEPCIÓN', 'DEP. RECEPCIÓN'),
+        ('DEP. RELIGIÓN', 'DEP. RELIGIÓN'),
+        ('DEP. SEGURIDAD', 'DEP. SEGURIDAD'),
+        ('DIRECCIÓN', 'DIRECCIÓN'),
+        ('ESP. ADUANAS', 'ESP. ADUANAS'),
+        ('ESP. BANCA Y FINANZAS', 'ESP. BANCA Y FINANZAS'),
+        ('ESP. CONTABILIDAD', 'ESP. CONTABILIDAD'),
+        ('ESP. INFORMÁTICA', 'ESP. INFORMÁTICA'),
+        ('ESP. DIBUJO TÉCNICO', 'ESP. DIBUJO TÉCNICO'),
+        ('ESP. EJECUTIVO CENTROS DE SERV.', 'ESP. EJECUTIVO CENTROS DE SERV.'),
+        ('ESP. ELECTRÓNICA', 'ESP. ELECTRÓNICA'),
+        ('ESP. SECRETARIADO EJECUTIVO', 'ESP. SECRETARIADO EJECUTIVO'),
+        ('ESP. TURISMO', 'ESP. TURISMO'),
+        ('JTA. ADMINISTRATIVA', 'JTA. ADMINISTRATIVA'),
+        ('P.N. FORMACIÓN TECNOLÓGICA', 'P.N. FORMACIÓN TECNOLÓGICA'),
+        ('REUBICADA', 'REUBICADA'),
+        ('TALLERES EXPLORATORIOS', 'TALLERES EXPLORATORIOS'),
+    ]
+    departamento = models.CharField(max_length=100, choices=DEPARTAMENTO_CHOICES, blank=True)
+    TITULO_CHOICES = [
+        ('I', 'I'),
+        ('II', 'II'),
+    ]
+    titulo = models.CharField(max_length=10, choices=TITULO_CHOICES, blank=True)
     HORARIO_CHOICES = [
         ('Diurno', 'Diurno'),
         ('Nocturno', 'Nocturno'),
