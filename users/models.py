@@ -95,9 +95,31 @@ class Estudiante(models.Model):
     apellido1 = models.CharField(max_length=100)
     apellido2 = models.CharField(max_length=100, blank=True, null=True)
     fecha_nacimiento = models.DateField()
-    nivel = models.IntegerField()
-    grupo = models.IntegerField()
-    subgrupo = models.CharField(max_length=10)
+    NIVEL_CHOICES = [
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10'),
+        (11, '11'),
+        (12, '12'),
+    ]
+    nivel = models.IntegerField(choices=NIVEL_CHOICES)
+    GRUPO_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+    ]
+    grupo = models.IntegerField(choices=GRUPO_CHOICES)
+    SUBGRUPO_CHOICES = [
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+    ]
+    subgrupo = models.CharField(max_length=10, choices=SUBGRUPO_CHOICES)
     HORARIO_CHOICES = [
         ('Diurno', 'Diurno'),
         ('Nocturno', 'Nocturno'),
