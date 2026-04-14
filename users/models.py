@@ -23,9 +23,11 @@ class Personal(models.Model):
     apellido = models.CharField(max_length=100, blank=True, default='')
     email = models.EmailField(blank=True)
     telefono = models.CharField(max_length=15, blank=True)
-    tipo = models.CharField(max_length=20, choices=[('Docente', 'Docente'), ('Administrativo', 'Administrativo')], blank=True)
-    fecha_nacimiento = models.DateField(blank=True, null=True)
-    puesto = models.CharField(max_length=100, blank=True)
+    PUESTO_CHOICES = [
+        ('Docente', 'Docente'),
+        ('Administrativo', 'Administrativo'),
+    ]
+    puesto = models.CharField(max_length=100, choices=PUESTO_CHOICES)
     departamento = models.CharField(max_length=100, blank=True)
     titulo = models.CharField(max_length=10, blank=True)
     HORARIO_CHOICES = [
@@ -41,7 +43,7 @@ class Personal(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido} - {self.tipo}"
+        return f"{self.nombre} {self.apellido} - {self.puesto}"
 
 class Estudiante(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='estudiante')
