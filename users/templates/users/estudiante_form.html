@@ -12,12 +12,17 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="{{ form.user.id_for_label }}" class="form-label">Usuario</label>
-                            {{ form.user }}
-                            {% if form.user.errors %}
-                                <div class="text-danger">{{ form.user.errors }}</div>
+                            <label for="{{ form.identificacion.id_for_label }}" class="form-label">Identificación</label>
+                            {{ form.identificacion }}
+                            {% if form.identificacion.errors %}
+                                <div class="text-danger">{{ form.identificacion.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-6 mb-3">
@@ -46,8 +51,12 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">Fecha Nacimiento</label>
-                            {{ form.fecha_nacimiento }}
+                            <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">Fecha de Nacimiento</label>
+                            {% if form.fecha_nacimiento.value %}
+                                <input type="date" id="{{ form.fecha_nacimiento.id_for_label }}" name="{{ form.fecha_nacimiento.html_name }}" class="form-control" value="{{ form.fecha_nacimiento.value|date:'Y-m-d' }}">
+                            {% else %}
+                                <input type="date" id="{{ form.fecha_nacimiento.id_for_label }}" name="{{ form.fecha_nacimiento.html_name }}" class="form-control">
+                            {% endif %}
                             {% if form.fecha_nacimiento.errors %}
                                 <div class="text-danger">{{ form.fecha_nacimiento.errors }}</div>
                             {% endif %}

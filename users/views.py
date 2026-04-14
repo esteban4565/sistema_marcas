@@ -129,13 +129,28 @@ class EstudianteListView(LoginRequiredMixin, AdminOnlyMixin, ListView):
 class EstudianteCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
     model = Estudiante
     template_name = 'users/estudiante_form.html'
-    fields = ['user', 'nombre', 'apellido1', 'apellido2', 'fecha_nacimiento', 'nivel', 'grupo', 'subgrupo', 'horario', 'estado']
+    fields = ['identificacion', 'nombre', 'apellido1', 'apellido2', 'fecha_nacimiento', 'nivel', 'grupo', 'subgrupo', 'horario', 'estado']
     success_url = reverse_lazy('estudiante_list')
+
+    def form_valid(self, form):
+        identificacion = form.cleaned_data['identificacion']
+        if User.objects.filter(username=identificacion).exists():
+            from django.contrib import messages
+            messages.error(self.request, f"La identificación {identificacion} ya existe.")
+            return self.form_invalid(form)
+        password = 'E' + identificacion + '*'
+        user = User.objects.create_user(username=identificacion, password=password)
+        role = Role.objects.get(name='estudiante')
+        from .models import Profile
+        Profile.objects.filter(user=user).delete()
+        Profile.objects.create(user=user, role=role)
+        form.instance.user = user
+        return super().form_valid(form)
 
 class EstudianteUpdateView(LoginRequiredMixin, AdminOnlyMixin, UpdateView):
     model = Estudiante
     template_name = 'users/estudiante_form.html'
-    fields = ['user', 'nombre', 'apellido1', 'apellido2', 'fecha_nacimiento', 'nivel', 'grupo', 'subgrupo', 'horario', 'estado']
+    fields = ['identificacion', 'nombre', 'apellido1', 'apellido2', 'fecha_nacimiento', 'nivel', 'grupo', 'subgrupo', 'horario', 'estado']
     success_url = reverse_lazy('estudiante_list')
 
 class EstudianteDeleteView(LoginRequiredMixin, AdminOnlyMixin, DeleteView):

@@ -90,6 +90,7 @@ class Personal(models.Model):
 
 class Estudiante(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='estudiante')
+    identificacion = models.CharField(max_length=20, unique=True, blank=True, null=True)
     nombre = models.CharField(max_length=100)
     apellido1 = models.CharField(max_length=100)
     apellido2 = models.CharField(max_length=100, blank=True, null=True)
