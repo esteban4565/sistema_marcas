@@ -71,3 +71,14 @@ nivel: 7
 grupo: 3
 subgrupo: A
 horario: Diurno
+
+Registro #2:
+identificación: 402810547
+nombre: Olman Alonso
+apellido1: Ortega
+apellido2: Machado
+fecha nacimiento: 31/10/2008
+nivel: 12
+grupo: 3
+subgrupo: B
+horario: Diurno

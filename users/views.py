@@ -4,7 +4,11 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, T
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import JsonResponse
 from .models import Role, Personal, Estudiante
+import requests
+from bs4 import BeautifulSoup
+import re
 
 class AdminOnlyMixin(UserPassesTestMixin):
     def test_func(self):
@@ -157,3 +161,87 @@ class EstudianteDeleteView(LoginRequiredMixin, AdminOnlyMixin, DeleteView):
     model = Estudiante
     template_name = 'users/estudiante_confirm_delete.html'
     success_url = reverse_lazy('estudiante_list')
+
+def buscar_tse(request):
+    """Vista para buscar datos en el TSE de Costa Rica"""
+    if request.method == 'POST':
+        identificacion = request.POST.get('identificacion', '')
+        
+        if not identificacion:
+            return JsonResponse({'error': 'Identificación requerida'}, status=400)
+        
+        try:
+            # URL de la página de búsqueda del TSE
+            url_busqueda = 'https://servicioselectorales.tse.go.cr/chc/consulta_cedula.aspx'
+            
+            # Crear sesión para mantener cookies
+            session = requests.Session()
+            
+            # Obtener la página inicial para conseguir los tokens necesarios
+            response_inicial = session.get(url_busqueda)
+            soup_inicial = BeautifulSoup(response_inicial.content, 'html.parser')
+            
+            # Buscar los tokens de ViewState y EventValidation
+            viewstate = soup_inicial.find('input', {'name': '__VIEWSTATE'})
+            eventvalidation = soup_inicial.find('input', {'name': '__EVENTVALIDATION'})
+            viewstategenerator = soup_inicial.find('input', {'name': '__VIEWSTATEGENERATOR'})
+            
+            if not viewstate or not eventvalidation:
+                return JsonResponse({'error': 'No se pudo obtener los datos de la página del TSE'}, status=400)
+            
+            # Preparar los datos para el POST
+            data = {
+                '__VIEWSTATE': viewstate.get('value', ''),
+                '__EVENTVALIDATION': eventvalidation.get('value', ''),
+                '__VIEWSTATEGENERATOR': viewstategenerator.get('value', '') if viewstategenerator else '',
+                'txtcedula': identificacion,
+                'btnConsultaCedula': 'Consultar',
+            }
+            
+            # Hacer la búsqueda
+            response_busqueda = session.post(url_busqueda, data=data)
+            soup_resultado = BeautifulSoup(response_busqueda.content, 'html.parser')
+            
+            # Buscar los labels con los datos
+            nombre_label = soup_resultado.find('span', {'id': 'lblnombrecompleto'})
+            fecha_label = soup_resultado.find('span', {'id': 'lblfechaNacimiento'})
+            
+            if not nombre_label or not fecha_label:
+                return JsonResponse({'error': 'No se encontraron datos para esa identificación'}, status=404)
+            
+            nombre_completo = nombre_label.text.strip() if nombre_label else ''
+            fecha_nacimiento = fecha_label.text.strip() if fecha_label else ''
+            
+            # Procesar el nombre completo (dividir en apellido1, apellido2, nombre)
+            partes = nombre_completo.split()
+            apellido1 = partes[0] if len(partes) > 0 else ''
+            apellido2 = partes[1] if len(partes) > 1 else ''
+            nombre = ' '.join(partes[2:]) if len(partes) > 2 else ''
+            
+            # Procesar la fecha (convertir formato si es necesario)
+            # Esperamos formato DD/MM/YYYY
+            try:
+                # Si viene en formato DD/MM/YYYY, convertir a YYYY-MM-DD
+                if '/' in fecha_nacimiento:
+                    partes_fecha = fecha_nacimiento.split('/')
+                    if len(partes_fecha) == 3:
+                        fecha_cocina = f"{partes_fecha[2]}-{partes_fecha[1]}-{partes_fecha[0]}"
+                    else:
+                        fecha_cocina = fecha_nacimiento
+                else:
+                    fecha_cocina = fecha_nacimiento
+            except:
+                fecha_cocina = fecha_nacimiento
+            
+            return JsonResponse({
+                'success': True,
+                'nombre': nombre,
+                'apellido1': apellido1,
+                'apellido2': apellido2,
+                'fecha_nacimiento': fecha_cocina,
+            })
+        
+        except Exception as e:
+            return JsonResponse({'error': f'Error al buscar en TSE: {str(e)}'}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

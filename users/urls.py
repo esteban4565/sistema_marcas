@@ -19,4 +19,5 @@ urlpatterns = [
     path('estudiantes/create/', views.EstudianteCreateView.as_view(), name='estudiante_create'),
     path('estudiantes/<int:pk>/update/', views.EstudianteUpdateView.as_view(), name='estudiante_update'),
     path('estudiantes/<int:pk>/delete/', views.EstudianteDeleteView.as_view(), name='estudiante_delete'),
+    path('buscar-tse/', views.buscar_tse, name='buscar_tse'),
 ]

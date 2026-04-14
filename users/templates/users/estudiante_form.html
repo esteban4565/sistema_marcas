@@ -10,17 +10,23 @@
                 <h4>{% if object %}Editar{% else %}Crear{% endif %} Estudiante</h4>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="estudianteForm">
                     {% csrf_token %}
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert alert-danger">{{ message }}</div>
                         {% endfor %}
                     {% endif %}
+                    <div id="alerta-tse" class="alert d-none" role="alert"></div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.identificacion.id_for_label }}" class="form-label">Identificación</label>
-                            {{ form.identificacion }}
+                            <div class="input-group">
+                                {{ form.identificacion }}
+                                <button type="button" class="btn btn-info" id="btnBuscarTSE" onclick="buscarTSE()">
+                                    <i class="fas fa-search"></i> Buscar TSE
+                                </button>
+                            </div>
                             {% if form.identificacion.errors %}
                                 <div class="text-danger">{{ form.identificacion.errors }}</div>
                             {% endif %}
@@ -109,3 +115,62 @@
     </div>
 </div>
 {% endblock %}
+
+<script>
+function buscarTSE() {
+    const identificacion = document.getElementById('id_identificacion').value;
+    
+    if (!identificacion) {
+        mostrarAlerta('Por favor ingrese una identificación', 'warning');
+        return;
+    }
+    
+    const btnBuscar = document.getElementById('btnBuscarTSE');
+    btnBuscar.disabled = true;
+    btnBuscar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    
+    // Hacer petición al servidor
+    fetch('{% url "buscar_tse" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: 'identificacion=' + encodeURIComponent(identificacion)
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnBuscar.disabled = false;
+        btnBuscar.innerHTML = '<i class="fas fa-search"></i> Buscar TSE';
+        
+        if (data.success) {
+            // Llenar los campos del formulario
+            document.getElementById('id_nombre').value = data.nombre;
+            document.getElementById('id_apellido1').value = data.apellido1;
+            document.getElementById('id_apellido2').value = data.apellido2;
+            document.getElementById('id_fecha_nacimiento').value = data.fecha_nacimiento;
+            
+            mostrarAlerta('Datos obtenidos del TSE correctamente', 'success');
+        } else {
+            mostrarAlerta(data.error || 'Error al buscar en TSE', 'danger');
+        }
+    })
+    .catch(error => {
+        btnBuscar.disabled = false;
+        btnBuscar.innerHTML = '<i class="fas fa-search"></i> Buscar TSE';
+        mostrarAlerta('Error de conexión: ' + error, 'danger');
+    });
+}
+
+function mostrarAlerta(mensaje, tipo) {
+    const alertaDiv = document.getElementById('alerta-tse');
+    alertaDiv.className = 'alert alert-' + tipo;
+    alertaDiv.textContent = mensaje;
+    alertaDiv.classList.remove('d-none');
+    
+    // Ocultar la alerta después de 5 segundos
+    setTimeout(() => {
+        alertaDiv.classList.add('d-none');
+    }, 5000);
+}
+</script>
