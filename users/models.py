@@ -115,8 +115,9 @@ class Estudiante(models.Model):
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        default_role = Role.objects.get(name='estudiante')
-        Profile.objects.create(user=instance, role=default_role)
+        if not Profile.objects.filter(user=instance).exists():
+            default_role = Role.objects.get(name='estudiante')
+            Profile.objects.create(user=instance, role=default_role)
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):

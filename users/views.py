@@ -105,6 +105,7 @@ class PersonalCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
         role_name = 'docente' if puesto == 'Docente' else 'administrativo'
         role = Role.objects.get(name=role_name)
         from .models import Profile
+        Profile.objects.filter(user=user).delete()
         Profile.objects.create(user=user, role=role)
         form.instance.user = user
         return super().form_valid(form)
