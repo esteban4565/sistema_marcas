@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Marcar Asistencia</title>
+</head>
+<body>
+    <h1>Marcar Asistencia</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="type">Tipo:</label>
+        <select name="type" id="type">
+            <option value="in">Entrada</option>
+            <option value="out">Salida</option>
+        </select>
+        <button type="submit">Marcar</button>
+    </form>
+    <a href="{% url 'attendance_list' %}">Ver Lista</a>
+</body>
+</html>

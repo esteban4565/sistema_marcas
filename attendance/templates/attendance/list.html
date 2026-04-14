@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Asistencias</title>
+</head>
+<body>
+    <h1>Lista de Asistencias</h1>
+    <ul>
+    {% for att in attendances %}
+        <li>{{ att.date }} {{ att.time }} - {{ att.get_type_display }}</li>
+    {% endfor %}
+    </ul>
+    <a href="{% url 'mark_attendance' %}">Marcar Asistencia</a>
+</body>
+</html>
