@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Bienvenido, {{ user.first_name|default:user.username }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if role == 'admin' %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Gestión de Usuarios</h5>
+                                    <p class="card-text">Administra todos los usuarios del sistema.</p>
+                                    <a href="{% url 'user_list' %}" class="btn btn-primary">Ir a Usuarios</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Gestión de Roles</h5>
+                                    <p class="card-text">Administra los roles del sistema.</p>
+                                    <a href="{% url 'role_list' %}" class="btn btn-primary">Ir a Roles</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Mis Asistencias</h5>
+                                <p class="card-text">Visualiza tu registro de asistencias.</p>
+                                <a href="{% url 'attendance_list' %}" class="btn btn-primary">Ver Asistencias</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Marcar Asistencia</h5>
+                                <p class="card-text">Registra tu entrada o salida.</p>
+                                <a href="{% url 'mark_attendance' %}" class="btn btn-primary">Marcar Asistencia</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="alert alert-info">
+                    <strong>Rol actual:</strong> {{ user.profile.role.name|upper }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -14,5 +14,8 @@ def mark_attendance(request):
 
 @login_required
 def attendance_list(request):
-    attendances = Attendance.objects.filter(user=request.user).order_by('-date', '-time')
+    if request.user.profile.role.name == 'admin':
+        attendances = Attendance.objects.all().order_by('-date', '-time')
+    else:
+        attendances = Attendance.objects.filter(user=request.user).order_by('-date', '-time')
     return render(request, 'attendance/list.html', {'attendances': attendances})

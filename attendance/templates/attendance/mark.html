@@ -1,19 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Marcar Asistencia</title>
-</head>
-<body>
-    <h1>Marcar Asistencia</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="type">Tipo:</label>
-        <select name="type" id="type">
-            <option value="in">Entrada</option>
-            <option value="out">Salida</option>
-        </select>
-        <button type="submit">Marcar</button>
-    </form>
-    <a href="{% url 'attendance_list' %}">Ver Lista</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Marcar Asistencia{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h4>Marcar Asistencia</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Tipo</label>
+                        <select name="type" id="type" class="form-select">
+                            <option value="in">Entrada</option>
+                            <option value="out">Salida</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Marcar</button>
+                    <a href="{% url 'attendance_list' %}" class="btn btn-secondary">Ver Lista</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

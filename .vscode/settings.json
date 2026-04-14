@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "sm_con",
+            "database": "${workspaceFolder:sistema_marcas}/db.sqlite3"
+        }
+    ]
+}

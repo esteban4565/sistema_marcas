@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Usuarios{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h4>Usuarios</h4>
+            </div>
+            <div class="card-body">
+                {% if user.profile.role.name == 'admin' %}
+                    <a href="{% url 'user_create' %}" class="btn btn-primary mb-3">Agregar Usuario</a>
+                {% endif %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            {% if user.profile.role.name == 'admin' %}
+                                <th>Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.first_name }} {{ u.last_name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{{ u.profile.role.name }}</td>
+                            {% if user.profile.role.name == 'admin' %}
+                                <td>
+                                    <a href="{% url 'user_update' u.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                                    <a href="{% url 'user_delete' u.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

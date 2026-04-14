@@ -1,15 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Asistencias</title>
-</head>
-<body>
-    <h1>Lista de Asistencias</h1>
-    <ul>
-    {% for att in attendances %}
-        <li>{{ att.date }} {{ att.time }} - {{ att.get_type_display }}</li>
-    {% endfor %}
-    </ul>
-    <a href="{% url 'mark_attendance' %}">Marcar Asistencia</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Asistencias{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4>Lista de Asistencias</h4>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'mark_attendance' %}" class="btn btn-primary mb-3">Marcar Asistencia</a>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {% if user.profile.role.name == 'admin' %}
+                                <th>Usuario</th>
+                            {% endif %}
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for att in attendances %}
+                        <tr>
+                            {% if user.profile.role.name == 'admin' %}
+                                <td>{{ att.user.username }}</td>
+                            {% endif %}
+                            <td>{{ att.date }}</td>
+                            <td>{{ att.time }}</td>
+                            <td>{{ att.get_type_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

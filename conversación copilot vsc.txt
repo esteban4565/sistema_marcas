@@ -1,0 +1,73 @@
+En la otra computadora mañana:
+
+Instala Git y Python si no los tienes.
+Clona el repo: git clone https://github.com/esteban4565/sistema_marcas.git
+Instala dependencias: pip install -r requirements.txt
+Ejecuta migraciones: python manage.py migrate
+Crea superusuario si es necesario: python manage.py createsuperuser
+Corre el servidor: python manage.py runserver
+El código y la conversación estarán disponibles para continuar. Si necesitas más ajustes, avísame.
+
+Admin:
+usuario: admin
+contraseña: s5t3b4n
+
+Docente:
+usuario: 603240688
+contraseña: D603240688*
+
+Administrativo:
+usuario: 602520067
+contraseña: A602520067*
+
+Estudiante:
+usuario: 209750487
+contraseña: E209750487*
+
+Registro #1:
+identificación: admin
+nombre: admin
+apellido1: admin
+apellido2:
+fecha nacimiento: 24/10/1982
+puesto: admin
+departamento: Soporte TI
+titulo: I
+horario: Diurno_Nocturno
+estado: activo
+
+Registro #2:
+identificación: 603240688
+nombre: Esteban
+apellido1: Quesada
+apellido2: Silva
+fecha nacimiento: 24/10/1982
+puesto: Docente
+departamento: ESP. Informática
+titulo: II
+horario: Diurno
+estado: activo
+
+Registro #3:
+identificación: 602520067
+nombre: Randall
+apellido1: Álvarez
+apellido2: García
+fecha nacimiento: 17/3/1973
+puesto: Coordinador Técnico
+departamento: Coordinadores
+titulo: II
+horario: Diurno
+estado: activo
+
+En la tabla Estudiantes
+Registro #1:
+identificación: 209750487
+nombre: ASHLEY FRANCINI
+apellido1: AGUILAR
+apellido2: LOPEZ
+fecha nacimiento: 02/09/2013
+nivel: 7
+grupo: 3
+subgrupo: A
+horario: Diurno

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Personal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Personal</h4>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'personal_create' %}" class="btn btn-primary mb-3">Agregar Personal</a>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Identificación</th>
+                            <th>Nombre</th>
+                            <th>Apellido1</th>
+                            <th>Apellido2</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Puesto</th>
+                            <th>Departamento</th>
+                            <th>Título</th>
+                            <th>Horario</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in personales %}
+                        <tr>
+                            <td>{{ p.user.username }}</td>
+                            <td>{{ p.nombre }}</td>
+                            <td>{{ p.apellido1 }}</td>
+                            <td>{{ p.apellido2|default:"" }}</td>
+                            <td>{{ p.fecha_nacimiento }}</td>
+                            <td>{{ p.puesto }}</td>
+                            <td>{{ p.departamento }}</td>
+                            <td>{{ p.titulo }}</td>
+                            <td>{{ p.get_horario_display }}</td>
+                            <td>{{ p.get_estado_display }}</td>
+                            <td>
+                                <a href="{% url 'personal_update' p.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="{% url 'personal_delete' p.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

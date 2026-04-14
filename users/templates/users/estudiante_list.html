@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Estudiantes{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Estudiantes</h4>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'estudiante_create' %}" class="btn btn-primary mb-3">Agregar Estudiante</a>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Identificación</th>
+                            <th>Nombre</th>
+                            <th>Apellido1</th>
+                            <th>Apellido2</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Nivel</th>
+                            <th>Grupo</th>
+                            <th>Subgrupo</th>
+                            <th>Horario</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in estudiantes %}
+                        <tr>
+                            <td>{{ e.user.username }}</td>
+                            <td>{{ e.nombre }}</td>
+                            <td>{{ e.apellido1 }}</td>
+                            <td>{{ e.apellido2|default:"" }}</td>
+                            <td>{{ e.fecha_nacimiento }}</td>
+                            <td>{{ e.nivel }}</td>
+                            <td>{{ e.grupo }}</td>
+                            <td>{{ e.subgrupo }}</td>
+                            <td>{{ e.get_horario_display }}</td>
+                            <td>{{ e.get_estado_display }}</td>
+                            <td>
+                                <a href="{% url 'estudiante_update' e.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="{% url 'estudiante_delete' e.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
