@@ -90,7 +90,7 @@ class PersonalListView(LoginRequiredMixin, AdminOnlyMixin, ListView):
 class PersonalCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
     model = Personal
     template_name = 'users/personal_form.html'
-    fields = ['identificacion', 'nombre', 'apellido', 'email', 'telefono', 'puesto', 'departamento', 'titulo', 'horario', 'estado']
+    fields = ['identificacion', 'nombre', 'apellido', 'email', 'telefono', 'puesto', 'fecha_nacimiento', 'departamento', 'titulo', 'horario', 'estado']
     success_url = reverse_lazy('personal_list')
 
     def form_valid(self, form):
@@ -112,7 +112,7 @@ class PersonalCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
 class PersonalUpdateView(LoginRequiredMixin, AdminOnlyMixin, UpdateView):
     model = Personal
     template_name = 'users/personal_form.html'
-    fields = ['identificacion', 'nombre', 'apellido', 'email', 'telefono', 'puesto', 'departamento', 'titulo', 'horario', 'estado']
+    fields = ['identificacion', 'nombre', 'apellido', 'email', 'telefono', 'puesto', 'fecha_nacimiento', 'departamento', 'titulo', 'horario', 'estado']
     success_url = reverse_lazy('personal_list')
 
 class PersonalDeleteView(LoginRequiredMixin, AdminOnlyMixin, DeleteView):

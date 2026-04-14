@@ -28,6 +28,7 @@ class Personal(models.Model):
         ('Administrativo', 'Administrativo'),
     ]
     puesto = models.CharField(max_length=100, choices=PUESTO_CHOICES)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
     departamento = models.CharField(max_length=100, blank=True)
     titulo = models.CharField(max_length=10, blank=True)
     HORARIO_CHOICES = [
