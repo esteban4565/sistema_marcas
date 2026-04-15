@@ -32,12 +32,15 @@
                             </select>
                         </div>
                         <div class="col-md-8">
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 flex-wrap">
                                 <a href="{% url 'select_person_type' person_type %}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left"></i> Cambiar Persona
                                 </a>
                                 <a href="{% url 'attendance_list' %}" class="btn btn-outline-primary">
                                     <i class="fas fa-home"></i> Inicio
+                                </a>
+                                <a href="{% url 'download_report_pdf' person_type identificacion %}{% if selected_month %}?month={{ selected_month }}{% endif %}" class="btn btn-danger">
+                                    <i class="fas fa-file-pdf"></i> Descargar PDF
                                 </a>
                             </div>
                         </div>

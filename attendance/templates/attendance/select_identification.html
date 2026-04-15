@@ -10,6 +10,31 @@
                 <h4>Seleccionar {{ person_type_display }}</h4>
             </div>
             <div class="card-body">
+                {% if person_type == 'personal' %}
+                <form method="get" class="mb-4">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="month" class="form-label">
+                                <i class="fas fa-calendar"></i> Seleccionar mes para el reporte general
+                            </label>
+                            <select name="month" id="month" class="form-select" onchange="this.form.submit()">
+                                <option value="">Todos los meses</option>
+                                {% for month_num, month_name in months %}
+                                <option value="{{ month_num }}" {% if selected_month == month_num|stringformat:"s" %}selected{% endif %}>
+                                    {{ month_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex gap-2">
+                            <a href="{% url 'download_general_personal_pdf' %}{% if selected_month %}?month={{ selected_month }}{% endif %}"
+                               class="btn btn-danger w-100">
+                                <i class="fas fa-file-pdf"></i> Descargar reporte general del Personal
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
