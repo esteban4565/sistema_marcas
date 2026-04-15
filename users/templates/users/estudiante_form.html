@@ -163,7 +163,7 @@ function buscarTSE() {
 
 function mostrarAlerta(mensaje, tipo) {
     const alertaDiv = document.getElementById('alerta-tse');
-    alertaDiv.className = 'alert alert-' + tipo;
+    alertaDiv.className = 'alert alert-' + tipo + ' alert-toast';
     alertaDiv.textContent = mensaje;
     alertaDiv.classList.remove('d-none');
     
@@ -173,5 +173,43 @@ function mostrarAlerta(mensaje, tipo) {
     }, 5000);
 }
 </script>
+
+<style>
+.alert-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.d-none + .alert-toast {
+    animation: slideOut 0.3s ease-out;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+</style>
 
 {% endblock %}

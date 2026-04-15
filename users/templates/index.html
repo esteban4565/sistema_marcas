@@ -1,0 +1,412 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Marcas - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .index-top,
+        .index-table {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .index-table .container {
+            max-width: 900px;
+        }
+
+        .index-top .container-center {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .header-top {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 80px;
+            background: #003366; /* Azul marino */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .logo-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-header img {
+            height: 60px;
+        }
+
+        .school-name {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .btn-login-header {
+            background: linear-gradient(135deg, #d4a54a 0%, #f0c860 100%);
+            color: #1d5c3f;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-login-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 165, 74, 0.3);
+            color: #1d5c3f;
+            text-decoration: none;
+        }
+
+        .index-top {
+            padding-top: 100px;
+            padding-bottom: 40px;
+        }
+
+        .container-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #003366;
+        }
+
+        .index-table {
+            padding: 0 20px 60px;
+        }
+
+        .table-card {
+            border: 1px solid #003366;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header-custom {
+            background: #003366;
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .card-header-custom h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .card-header-custom i {
+            font-size: 36px;
+        }
+
+        .time-display {
+            font-size: 20px;
+            font-weight: 500;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+        }
+
+        .card-body-custom {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #003366;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #CC0000;
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #CC0000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            background: #AA0000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(204, 0, 0, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .info-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .card-container {
+                margin: 20px;
+            }
+
+            .card-header-custom h1 {
+                font-size: 24px;
+            }
+
+            .card-header-custom i {
+                font-size: 28px;
+            }
+
+            .header-top {
+                padding: 0 15px;
+            }
+
+            .btn-login-header {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .school-name {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .school-name {
+                display: none;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .school-name {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-top">
+        <div class="logo-header">
+            <img src="{% static 'EscudoColegio.png' %}" alt="Escudo del Colegio">
+            <span class="school-name">Sistema de Marcas</span>
+        </div>
+        <a href="{% url 'login' %}" class="btn-login-header">
+            <i class="fas fa-sign-in-alt"></i>
+            Iniciar Sesión
+        </a>
+    </div>
+
+    <div class="index-top">
+        <div class="container-center">
+            <div class="card-container">
+                <div class="card-header-custom">
+                    <h1>
+                        <i class="fas fa-clock"></i>
+                        Sistema de Marcas
+                    </h1>
+                    <div class="time-display" id="currentTime">
+                        {{ current_time|date:"d/m/Y H:i:s" }}
+                    </div>
+                </div>
+
+                <div class="card-body-custom">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="POST" action="" id="loginForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="identification">
+                                <i class="fas fa-id-card"></i> Identificación
+                            </label>
+                            <input 
+                                type="text" 
+                                id="identification" 
+                                name="identification" 
+                                placeholder="Ingresa tu identificación" 
+                                class="form-control"
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn-login">
+                            <i class="fas fa-plus"></i>
+                            Agregar Marca
+                        </button>
+
+                        <div class="info-text">
+                            <i class="fas fa-info-circle"></i>
+                            Usa tu identificación para acceder
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de últimas marcas -->
+    <div class="index-table">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="card table-card">
+                        <div class="card-header" style="background-color: #003366; color: white;">
+                            <h5 class="mb-0">
+                                <i class="fas fa-history"></i>
+                                Últimas Marcas Registradas
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if ultimas_marcas %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th><i class="fas fa-id-card"></i> Identificación</th>
+                                                <th><i class="fas fa-user"></i> Nombre Completo</th>
+                                                <th><i class="fas fa-calendar-alt"></i> Fecha y Hora</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for marca in ultimas_marcas %}
+                                            <tr>
+                                                <td>{{ marca.identificacion }}</td>
+                                                <td>{{ marca.nombre_completo }}</td>
+                                                <td>{{ marca.fecha_hora|date:"d/m/Y H:i:s" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center text-muted mt-2">
+                                    <small>Mostrando las últimas {{ ultimas_marcas|length }} marcas registradas</small>
+                                </div>
+                            {% else %}
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                    <p>No hay marcas registradas aún.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Actualizar la hora en tiempo real
+        function updateTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            const formatter = new Intl.DateTimeFormat('es-ES', options);
+            document.getElementById('currentTime').textContent = formatter.format(now);
+        }
+
+        // Actualizar cada segundo
+        setInterval(updateTime, 1000);
+
+        // Actualizar al cargar la página y enfocar el input
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            document.getElementById('identification').focus();
+        });
+
+        // Hacer que Enter en el input envíe el formulario
+        document.getElementById('identification').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('loginForm').submit();
+            }
+        });
+    </script>
+</body>
+</html>
+

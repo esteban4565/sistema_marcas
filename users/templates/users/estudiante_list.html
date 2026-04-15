@@ -34,7 +34,7 @@
                             <td>{{ e.nombre }}</td>
                             <td>{{ e.apellido1 }}</td>
                             <td>{{ e.apellido2|default:"" }}</td>
-                            <td>{{ e.fecha_nacimiento }}</td>
+                            <td>{{ e.fecha_nacimiento|date:"d/m/Y" }}</td>
                             <td>{{ e.nivel }}</td>
                             <td>{{ e.grupo }}</td>
                             <td>{{ e.subgrupo }}</td>

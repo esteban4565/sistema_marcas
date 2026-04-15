@@ -20,7 +20,8 @@ class Personal(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='personal')
     identificacion = models.CharField(max_length=20, unique=True, blank=True, null=True)
     nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100, blank=True, default='')
+    apellido1 = models.CharField(max_length=100, blank=True, default='')
+    apellido2 = models.CharField(max_length=100, blank=True, default='')
     email = models.EmailField(blank=True)
     telefono = models.CharField(max_length=15, blank=True)
     PUESTO_CHOICES = [
@@ -86,7 +87,14 @@ class Personal(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido} - {self.puesto}"
+        return f"{self.nombre} {self.apellido1} - {self.puesto}"
+
+    def delete(self, *args, **kwargs):
+        # Eliminar el usuario asociado primero
+        user = self.user
+        super().delete(*args, **kwargs)
+        # Esto también elimina el Profile y Attendance por cascada
+        user.delete()
 
 class Estudiante(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='estudiante')
@@ -134,6 +142,13 @@ class Estudiante(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido1} - Nivel {self.nivel} Grupo {self.grupo}{self.subgrupo}"
+
+    def delete(self, *args, **kwargs):
+        # Eliminar el usuario asociado primero
+        user = self.user
+        super().delete(*args, **kwargs)
+        # Esto también elimina el Profile y Attendance por cascada
+        user.delete()
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

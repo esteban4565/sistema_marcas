@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Marcas de Asistencia{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-clock"></i> Mis Últimas Marcas de Asistencia</h4>
+            </div>
+            <div class="card-body">
+                {% if marcas %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar-day"></i> Fecha</th>
+                                    <th><i class="fas fa-clock"></i> Hora</th>
+                                    <th><i class="fas fa-calendar-week"></i> Día</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for marca in marcas %}
+                                <tr>
+                                    <td>{{ marca.fecha_hora|date:"d/m/Y" }}</td>
+                                    <td>{{ marca.fecha_hora|date:"H:i:s" }}</td>
+                                    <td>
+                                        {% with dia_semana=marca.fecha_hora|date:"w" %}
+                                            {% if dia_semana == "1" %}Lunes{% elif dia_semana == "2" %}Martes{% elif dia_semana == "3" %}Miércoles{% elif dia_semana == "4" %}Jueves{% elif dia_semana == "5" %}Viernes{% elif dia_semana == "6" %}Sábado{% elif dia_semana == "0" %}Domingo{% endif %}
+                                        {% endwith %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            Mostrando las últimas {{ marcas|length }} marcas.
+                            Para ver todas sus marcas, contacte al administrador.
+                        </small>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle"></i>
+                        No tiene marcas de asistencia registradas aún.
+                    </div>
+                {% endif %}
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

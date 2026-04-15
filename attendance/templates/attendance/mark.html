@@ -13,11 +13,8 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="type" class="form-label">Tipo</label>
-                        <select name="type" id="type" class="form-select">
-                            <option value="in">Entrada</option>
-                            <option value="out">Salida</option>
-                        </select>
+                        <label for="identificacion" class="form-label">Identificación</label>
+                        <input type="text" name="identificacion" id="identificacion" class="form-control" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Marcar</button>
                     <a href="{% url 'attendance_list' %}" class="btn btn-secondary">Ver Lista</a>

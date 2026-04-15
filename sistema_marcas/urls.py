@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
+from users.views import IndexView
 
 urlpatterns = [
-    path('', lambda request: redirect('login') if not request.user.is_authenticated else redirect('dashboard'), name='home'),
+    path('', IndexView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('attendance/', include('attendance.urls')),

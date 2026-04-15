@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Marcas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4>Gestión de Marcas de Asistencia</h4>
+            </div>
+            <div class="card-body text-center">
+                <p class="mb-4">Seleccione el tipo de persona para consultar sus marcas:</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'select_person_type' 'personal' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-tie"></i> Personal
+                    </a>
+                    <a href="{% url 'select_person_type' 'estudiante' %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-user-graduate"></i> Estudiantes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

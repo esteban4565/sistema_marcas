@@ -1,14 +1,82 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib import messages
 from django.http import JsonResponse
 from .models import Role, Personal, Estudiante
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 import re
+
+class IndexView(TemplateView):
+    template_name = 'index.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_time'] = datetime.now()
+        
+        # Obtener las últimas 10 marcas con información de las personas
+        from attendance.models import Marca
+        from .models import Personal, Estudiante
+        
+        ultimas_marcas = Marca.objects.select_related().order_by('-fecha_hora')[:10]
+        marcas_con_info = []
+        
+        for marca in ultimas_marcas:
+            persona_info = {
+                'identificacion': marca.identificacion,
+                'fecha_hora': marca.fecha_hora,
+                'tipo_persona': marca.tipo_persona,
+                'nombre_completo': marca.identificacion  # fallback
+            }
+            
+            # Buscar información de la persona
+            if marca.tipo_persona == 'personal':
+                try:
+                    persona = Personal.objects.get(identificacion=marca.identificacion)
+                    persona_info['nombre_completo'] = f"{persona.nombre} {persona.apellido1} {persona.apellido2 or ''}".strip()
+                except Personal.DoesNotExist:
+                    pass
+            elif marca.tipo_persona == 'estudiante':
+                try:
+                    persona = Estudiante.objects.get(identificacion=marca.identificacion)
+                    persona_info['nombre_completo'] = f"{persona.nombre} {persona.apellido1} {persona.apellido2 or ''}".strip()
+                except Estudiante.DoesNotExist:
+                    pass
+            
+            marcas_con_info.append(persona_info)
+        
+        context['ultimas_marcas'] = marcas_con_info
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        identificacion = request.POST.get('identification', '').strip()
+        if identificacion:
+            from attendance.models import Marca
+            # Crear la marca
+            marca = Marca.objects.create(identificacion=identificacion)
+            # Verificar si existe la persona
+            from .models import Personal, Estudiante
+            persona = None
+            if Personal.objects.filter(identificacion=identificacion).exists():
+                persona = Personal.objects.get(identificacion=identificacion)
+                marca.tipo_persona = 'personal'
+                marca.save()
+            elif Estudiante.objects.filter(identificacion=identificacion).exists():
+                persona = Estudiante.objects.get(identificacion=identificacion)
+                marca.tipo_persona = 'estudiante'
+                marca.save()
+            
+            # Mensaje de éxito
+            messages.success(request, f"Marca registrada exitosamente para {persona.nombre if persona else identificacion}")
+        else:
+            messages.error(request, "Por favor ingrese una identificación válida")
+        
+        return redirect('home')
 
 class AdminOnlyMixin(UserPassesTestMixin):
     def test_func(self):
@@ -94,7 +162,7 @@ class PersonalListView(LoginRequiredMixin, AdminOnlyMixin, ListView):
 class PersonalCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
     model = Personal
     template_name = 'users/personal_form.html'
-    fields = ['identificacion', 'nombre', 'apellido', 'email', 'telefono', 'puesto', 'fecha_nacimiento', 'departamento', 'titulo', 'horario', 'estado']
+    fields = ['identificacion', 'nombre', 'apellido1', 'apellido2', 'email', 'telefono', 'puesto', 'fecha_nacimiento', 'departamento', 'titulo', 'horario', 'estado']
     success_url = reverse_lazy('personal_list')
 
     def form_valid(self, form):
@@ -117,7 +185,7 @@ class PersonalCreateView(LoginRequiredMixin, AdminOnlyMixin, CreateView):
 class PersonalUpdateView(LoginRequiredMixin, AdminOnlyMixin, UpdateView):
     model = Personal
     template_name = 'users/personal_form.html'
-    fields = ['identificacion', 'nombre', 'apellido', 'email', 'telefono', 'puesto', 'fecha_nacimiento', 'departamento', 'titulo', 'horario', 'estado']
+    fields = ['identificacion', 'nombre', 'apellido1', 'apellido2', 'email', 'telefono', 'puesto', 'fecha_nacimiento', 'departamento', 'titulo', 'horario', 'estado']
     success_url = reverse_lazy('personal_list')
 
 class PersonalDeleteView(LoginRequiredMixin, AdminOnlyMixin, DeleteView):
@@ -179,7 +247,7 @@ def buscar_tse(request):
             
             # Obtener la página inicial para conseguir los tokens necesarios
             response_inicial = session.get(url_busqueda)
-            soup_inicial = BeautifulSoup(response_inicial.content, 'html.parser')
+            soup_inicial = BeautifulSoup(response_inicial.text, 'html.parser')
             
             # Buscar los tokens de ViewState y EventValidation
             viewstate = soup_inicial.find('input', {'name': '__VIEWSTATE'})
@@ -200,7 +268,7 @@ def buscar_tse(request):
             
             # Hacer la búsqueda
             response_busqueda = session.post(url_busqueda, data=data)
-            soup_resultado = BeautifulSoup(response_busqueda.content, 'html.parser')
+            soup_resultado = BeautifulSoup(response_busqueda.text, 'html.parser')
             
             # Buscar los labels con los datos
             nombre_label = soup_resultado.find('span', {'id': 'lblnombrecompleto'})
@@ -214,9 +282,9 @@ def buscar_tse(request):
             
             # Procesar el nombre completo (dividir en apellido1, apellido2, nombre)
             partes = nombre_completo.split()
-            apellido1 = partes[0] if len(partes) > 0 else ''
-            apellido2 = partes[1] if len(partes) > 1 else ''
-            nombre = ' '.join(partes[2:]) if len(partes) > 2 else ''
+            apellido1 = partes[-2] if len(partes) >= 2 else ''
+            apellido2 = partes[-1] if len(partes) >= 1 else ''
+            nombre = ' '.join(partes[:-2]) if len(partes) > 2 else ''
             
             # Procesar la fecha (convertir formato si es necesario)
             # Esperamos formato DD/MM/YYYY

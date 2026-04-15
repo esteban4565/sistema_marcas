@@ -10,17 +10,23 @@
                 <h4>{% if object %}Editar{% else %}Crear{% endif %} Personal</h4>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="personalForm">
                     {% csrf_token %}
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert alert-danger">{{ message }}</div>
                         {% endfor %}
                     {% endif %}
+                    <div id="alerta-tse" class="alert d-none" role="alert"></div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.identificacion.id_for_label }}" class="form-label">Identificación</label>
-                            {{ form.identificacion }}
+                            <div class="input-group">
+                                {{ form.identificacion }}
+                                <button type="button" class="btn btn-info" id="btnBuscarTSE" onclick="buscarTSE()">
+                                    <i class="fas fa-search"></i> Buscar TSE
+                                </button>
+                            </div>
                             {% if form.identificacion.errors %}
                                 <div class="text-danger">{{ form.identificacion.errors }}</div>
                             {% endif %}
@@ -35,12 +41,21 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="{{ form.apellido.id_for_label }}" class="form-label">Apellido</label>
-                            {{ form.apellido }}
-                            {% if form.apellido.errors %}
-                                <div class="text-danger">{{ form.apellido.errors }}</div>
+                            <label for="{{ form.apellido1.id_for_label }}" class="form-label">Apellido1</label>
+                            {{ form.apellido1 }}
+                            {% if form.apellido1.errors %}
+                                <div class="text-danger">{{ form.apellido1.errors }}</div>
                             {% endif %}
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.apellido2.id_for_label }}" class="form-label">Apellido2</label>
+                            {{ form.apellido2 }}
+                            {% if form.apellido2.errors %}
+                                <div class="text-danger">{{ form.apellido2.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
                             {{ form.email }}
@@ -48,8 +63,6 @@
                                 <div class="text-danger">{{ form.email.errors }}</div>
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono</label>
                             {{ form.telefono }}
@@ -57,6 +70,8 @@
                                 <div class="text-danger">{{ form.telefono.errors }}</div>
                             {% endif %}
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.puesto.id_for_label }}" class="form-label">Puesto</label>
                             {{ form.puesto }}
@@ -64,8 +79,6 @@
                                 <div class="text-danger">{{ form.puesto.errors }}</div>
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">Fecha de Nacimiento</label>
                             {% if form.fecha_nacimiento.value %}
@@ -77,29 +90,32 @@
                                 <div class="text-danger">{{ form.fecha_nacimiento.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
                             <label for="{{ form.departamento.id_for_label }}" class="form-label">Departamento</label>
                             {{ form.departamento }}
                             {% if form.departamento.errors %}
                                 <div class="text-danger">{{ form.departamento.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="{{ form.titulo.id_for_label }}" class="form-label">Título</label>
                             {{ form.titulo }}
                             {% if form.titulo.errors %}
                                 <div class="text-danger">{{ form.titulo.errors }}</div>
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="{{ form.horario.id_for_label }}" class="form-label">Horario</label>
                             {{ form.horario }}
                             {% if form.horario.errors %}
                                 <div class="text-danger">{{ form.horario.errors }}</div>
                             {% endif %}
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.estado.id_for_label }}" class="form-label">Estado</label>
                             {{ form.estado }}
@@ -115,4 +131,102 @@
         </div>
     </div>
 </div>
+
+<script>
+function buscarTSE() {
+    const identificacion = document.getElementById('id_identificacion').value;
+    
+    if (!identificacion) {
+        mostrarAlerta('Por favor ingrese una identificación', 'warning');
+        return;
+    }
+    
+    const btnBuscar = document.getElementById('btnBuscarTSE');
+    btnBuscar.disabled = true;
+    btnBuscar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    
+    // Hacer petición al servidor
+    fetch('{% url "buscar_tse" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: 'identificacion=' + encodeURIComponent(identificacion)
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnBuscar.disabled = false;
+        btnBuscar.innerHTML = '<i class="fas fa-search"></i> Buscar TSE';
+        
+        if (data.success) {
+            // Llenar los campos del formulario
+            document.getElementById('id_nombre').value = data.nombre;
+            document.getElementById('id_apellido1').value = data.apellido1;
+            document.getElementById('id_apellido2').value = data.apellido2;
+            document.getElementById('id_fecha_nacimiento').value = data.fecha_nacimiento;
+            
+            mostrarAlerta('Datos obtenidos del TSE correctamente', 'success');
+        } else {
+            mostrarAlerta(data.error || 'Error al buscar en TSE', 'danger');
+        }
+    })
+    .catch(error => {
+        btnBuscar.disabled = false;
+        btnBuscar.innerHTML = '<i class="fas fa-search"></i> Buscar TSE';
+        mostrarAlerta('Error de conexión: ' + error, 'danger');
+    });
+}
+
+function mostrarAlerta(mensaje, tipo) {
+    const alertaDiv = document.getElementById('alerta-tse');
+    alertaDiv.className = 'alert alert-' + tipo + ' alert-toast';
+    alertaDiv.textContent = mensaje;
+    alertaDiv.classList.remove('d-none');
+    
+    // Ocultar la alerta después de 5 segundos
+    setTimeout(() => {
+        alertaDiv.classList.add('d-none');
+    }, 5000);
+}
+</script>
+
+<style>
+.alert-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.d-none + .alert-toast {
+    animation: slideOut 0.3s ease-out;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+</style>
+
 {% endblock %}
