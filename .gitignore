@@ -1,1 +1,6 @@
-__pycache__/\n*.pyc\ndb.sqlite3\n.DS_Store\n*.log\ncoverage/\n
+__pycache__/
+*.pyc
+db.sqlite3
+.DS_Store
+*.log
+coverage/
