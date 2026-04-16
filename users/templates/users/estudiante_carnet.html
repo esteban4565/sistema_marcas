@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carnet de {{ full_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" onclick="window.print()">Imprimir Carnet</button>
+</div>
+
+<div class="carnet-display">
+    <div class="carnet-side carnet-front">
+        <div class="front-header">
+            <div class="front-header-left">
+                <img src="{% static 'img_personal/footer_frontal_carnet_personal.jpg' %}" alt="Logos" class="header-logo" />
+            </div>
+            <div class="front-year">2026</div>
+        </div>
+
+        <div class="front-main">
+            <div class="front-photo-col">
+                <div class="student-photo-wrap">
+                    <img src="{% static photo_filename %}" alt="Foto de {{ full_name }}" class="student-photo" onerror="this.style.display='none'" />
+                </div>
+                <div class="student-id-box">{{ formatted_identificacion }}</div>
+            </div>
+            <div class="front-info-col">
+                <div class="school-lines">
+                    <div>Dirección Regional de Educación Alajuela</div>
+                    <div>Circuito 01</div>
+                    <div>Colegio Técnico Profesional de Carrizal</div>
+                </div>
+                <div class="student-name">{{ full_name }}</div>
+                <div class="student-level">{{ nivel_grupo_ciclo }}</div>
+                <div class="student-shift">{{ estudiante.get_horario_display }}</div>
+            </div>
+        </div>
+
+        <div class="front-footer-note">* Válido de Febrero a Diciembre del 2026 *</div>
+    </div>
+
+    <div class="carnet-side carnet-back">
+        <div class="back-text">
+            El Colegio Técnico Profesional de Carrizal agradece a las autoridades y funcionarios de empresas privadas y públicas,
+            cualquier atención que se dispense al portador de este carné.
+        </div>
+
+        <div class="back-body">
+            <div class="back-qr-box">
+                <img src="{{ qr_url }}" alt="QR de {{ estudiante.identificacion }}" class="back-qr" />
+            </div>
+            <div class="back-signature-block">
+                <img src="{% static 'img_personal/firma_directora.jpg' %}" alt="Firma" class="back-signature" />
+                <div class="back-director">M.Sc. Ingrid Jiménez López</div>
+                <div class="back-role">Directora</div>
+            </div>
+        </div>
+
+        <div class="back-footer">
+            <img src="{% static 'img_personal/footer_posterior_carnet_personal.jpg' %}" alt="Footer" class="back-footer-img" />
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --card-w: 8.56cm;
+    --card-h: 5.398cm;
+    --left-col-w: 34%;
+    --main-gap: 8px;
+    --left-col-exact: calc((100% - var(--main-gap)) * 0.34);
+}
+
+.carnet-display {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+}
+
+.carnet-side {
+    width: 520px;
+    height: 330px;
+    border: 1px solid #223;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.14);
+    background: #fff;
+    overflow: hidden;
+}
+
+.carnet-front {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(140deg, #ffffff 0%, #f5f7fb 62%, #e8edf6 100%);
+}
+
+.front-header {
+    height: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.front-header-left {
+    width: var(--left-col-exact);
+    height: 100%;
+    background: #0e2a62;
+}
+
+.header-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    object-position: center;
+}
+
+.front-year {
+    background: #0e2a62;
+    color: #fff;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1;
+    padding: 5px 10px;
+}
+
+.front-main {
+    flex: 1;
+    display: flex;
+    gap: var(--main-gap);
+    margin-top: 6px;
+}
+
+.front-photo-col {
+    width: var(--left-col-exact);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.student-photo-wrap {
+    width: 100%;
+    height: 168px;
+    border: 1px solid #9ca4b4;
+    background: #eef2f8;
+    overflow: hidden;
+}
+
+.student-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.student-id-box {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #8a92a6;
+    background: #fff;
+    font-size: 24px;
+    font-weight: 800;
+    padding: 6px 4px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.front-info-col {
+    width: 66%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2px 6px;
+    color: #111;
+}
+
+.school-lines {
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.student-name {
+    margin-top: 12px;
+    font-size: 26px;
+    line-height: 1.05;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.student-level {
+    margin-top: 10px;
+    font-size: 24px;
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.student-shift {
+    margin-top: 10px;
+    font-size: 30px;
+    line-height: 1.05;
+    font-weight: 800;
+}
+
+.front-footer-note {
+    text-align: center;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #222;
+}
+
+.carnet-back {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(155deg, #ffffff 0%, #f6fbff 48%, #ecf4fb 100%);
+}
+
+.back-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #222;
+    text-align: center;
+    min-height: 92px;
+}
+
+.back-body {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.back-qr-box {
+    width: 130px;
+    height: 130px;
+    border: 2px solid #111;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.back-qr {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.back-signature-block {
+    flex: 1;
+    text-align: center;
+    padding-bottom: 4px;
+}
+
+.back-signature {
+    width: 78%;
+    max-height: 56px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+.back-director {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    border-top: 2px solid #222;
+    display: inline-block;
+    padding-top: 3px;
+}
+
+.back-role {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.back-footer {
+    margin-top: auto;
+}
+
+.back-footer-img {
+    width: 100%;
+    height: 34px;
+    object-fit: contain;
+    object-position: center;
+}
+
+@media print {
+    @page {
+        size: var(--card-w) var(--card-h);
+        margin: 0;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .btn,
+    .d-flex.justify-content-end {
+        display: none !important;
+    }
+
+    .carnet-display {
+        gap: 0;
+    }
+
+    .carnet-side {
+        width: var(--card-w);
+        height: var(--card-h);
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        page-break-inside: avoid;
+        page-break-after: always;
+    }
+
+    .carnet-side:last-child {
+        page-break-after: avoid;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .carnet-side {
+        width: 100%;
+        max-width: 520px;
+        height: auto;
+        aspect-ratio: 8.56 / 5.398;
+    }
+
+    .student-id-box {
+        font-size: clamp(16px, 3.4vw, 32px);
+    }
+
+    .student-name {
+        font-size: clamp(18px, 4vw, 34px);
+    }
+
+    .student-level {
+        font-size: clamp(14px, 2.7vw, 24px);
+    }
+
+    .student-shift {
+        font-size: clamp(16px, 3.2vw, 30px);
+    }
+
+    .back-role {
+        font-size: clamp(16px, 3.4vw, 28px);
+    }
+}
+</style>
+
+<script>
+function fitStudentIdText() {
+    const idBoxes = document.querySelectorAll('.student-id-box');
+    idBoxes.forEach((box) => {
+        box.style.fontSize = '24px';
+        box.style.letterSpacing = '0';
+        const minSize = 12;
+        let size = 24;
+
+        while (box.scrollWidth > box.clientWidth && size > minSize) {
+            size -= 1;
+            box.style.fontSize = size + 'px';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', fitStudentIdText);
+window.addEventListener('resize', fitStudentIdText);
+window.addEventListener('beforeprint', fitStudentIdText);
+</script>
+{% endblock %}

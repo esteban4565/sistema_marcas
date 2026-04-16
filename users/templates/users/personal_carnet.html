@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carnet de {{ full_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" onclick="window.print()">Imprimir Carnet</button>
+</div>
+
+<div class="carnet-display">
+    <div class="carnet-side carnet-front">
+        <div class="frente-card">
+            <div class="frente-photo-wrap">
+                <img src="{% static photo_filename %}" alt="Foto de {{ full_name }}" class="frente-foto" onerror="this.style.display='none'" />
+            </div>
+            <div class="frente-info">
+                <div class="frente-name">{{ full_name }}</div>
+                <div class="frente-id">{{ formatted_identificacion }}</div>
+                <div class="frente-role">{{ personal.puesto }}</div>
+            </div>
+            <div class="frente-footer">
+                <img src="{% static 'img_personal/footer_frontal_carnet_personal.jpg' %}" alt="Footer frontal" class="footer-img" />
+            </div>
+        </div>
+    </div>
+
+    <div class="carnet-side carnet-back">
+        <div class="atras-card">
+            <div class="atras-texto">
+                <img src="{% static 'img_personal/texto_parte_posterior_carnet.jpg' %}" alt="Texto parte posterior" class="atras-texto-img" />
+            </div>
+            <div class="atras-qr">
+                <img src="{{ qr_url }}" alt="QR de {{ personal.identificacion }}" class="atras-qr-img" />
+            </div>
+            <div class="atras-firma">
+                <img src="{% static 'img_personal/firma_directora.jpg' %}" alt="Firma directora" class="atras-firma-img" />
+            </div>
+            <div class="atras-footer">
+                <img src="{% static 'img_personal/footer_posterior_carnet_personal.jpg' %}" alt="Footer posterior" class="atras-footer-img" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --card-short: 5.398cm;
+    --card-long: 8.56cm;
+}
+
+.carnet-display {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+}
+
+.carnet-side {
+    width: 240px;
+    height: 380px;
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(0,0,0,0.12);
+    background: white;
+    overflow: hidden;
+}
+
+.carnet-side img {
+    display: block;
+    width: 100%;
+}
+
+.frente-card,
+.atras-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.frente-card {
+    background: #0b2240;
+    color: #ffffff;
+}
+
+.frente-photo-wrap {
+    width: 132px;
+    height: 132px;
+    margin: 16px auto 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.frente-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.frente-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 4px 14px 8px;
+    text-align: center;
+}
+
+.frente-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.frente-id {
+    font-size: 10px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.frente-role {
+    font-size: 9px;
+    font-weight: 700;
+    color: #e3b75f;
+    text-transform: uppercase;
+}
+
+.frente-footer {
+    height: 56px;
+    overflow: hidden;
+}
+
+.frente-footer .footer-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.atras-card {
+    background: #ffffff;
+}
+
+.atras-texto {
+    flex: 0 0 36%;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px 10px 0;
+}
+
+.atras-texto-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.atras-qr {
+    flex: 0 0 36%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+
+.atras-qr-img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border: 1px solid #333;
+    background: #ffffff;
+}
+
+.atras-firma {
+    flex: 0 0 20%;
+    overflow: hidden;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.atras-firma-img {
+    width: 100%;
+    height: auto;
+    max-height: 55px;
+    object-fit: contain;
+}
+
+.atras-footer {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.atras-footer-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+@media print {
+    @page {
+        size: var(--card-short) var(--card-long);
+        margin: 0;
+        padding: 0;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    body {
+        min-height: 100vh;
+    }
+
+    .btn,
+    .d-flex.justify-content-end {
+        display: none !important;
+    }
+
+    .carnet-display {
+        gap: 0;
+    }
+
+    .carnet-side {
+        border: none;
+        box-shadow: none;
+        page-break-inside: avoid;
+        page-break-after: always;
+        width: var(--card-short);
+        height: var(--card-long);
+        margin: 0;
+    }
+
+    .carnet-side:last-child {
+        page-break-after: avoid;
+    }
+}
+
+@media screen {
+    .carnet-side {
+        width: 270px;
+        height: 430px;
+    }
+}
+</style>
+
+{% endblock %}

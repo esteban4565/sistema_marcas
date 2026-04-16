@@ -11,12 +11,15 @@
             </div>
             <div class="card-body text-center">
                 <p class="mb-4">Seleccione el tipo de persona para consultar sus marcas:</p>
-                <div class="d-flex justify-content-center gap-3">
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
                     <a href="{% url 'select_person_type' 'personal' %}" class="btn btn-primary btn-lg">
                         <i class="fas fa-user-tie"></i> Personal
                     </a>
                     <a href="{% url 'select_person_type' 'estudiante' %}" class="btn btn-success btn-lg">
                         <i class="fas fa-user-graduate"></i> Estudiantes
+                    </a>
+                    <a href="{% url 'personal_list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-id-card"></i> Carnets Personal
                     </a>
                 </div>
             </div>

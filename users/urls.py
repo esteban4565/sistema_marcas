@@ -15,9 +15,11 @@ urlpatterns = [
     path('personal/create/', views.PersonalCreateView.as_view(), name='personal_create'),
     path('personal/<int:pk>/update/', views.PersonalUpdateView.as_view(), name='personal_update'),
     path('personal/<int:pk>/delete/', views.PersonalDeleteView.as_view(), name='personal_delete'),
+    path('personal/<int:pk>/carnet/', views.PersonalCarnetView.as_view(), name='personal_carnet'),
     path('estudiantes/', views.EstudianteListView.as_view(), name='estudiante_list'),
     path('estudiantes/create/', views.EstudianteCreateView.as_view(), name='estudiante_create'),
     path('estudiantes/<int:pk>/update/', views.EstudianteUpdateView.as_view(), name='estudiante_update'),
     path('estudiantes/<int:pk>/delete/', views.EstudianteDeleteView.as_view(), name='estudiante_delete'),
+    path('estudiantes/<int:pk>/carnet/', views.EstudianteCarnetView.as_view(), name='estudiante_carnet'),
     path('buscar-tse/', views.buscar_tse, name='buscar_tse'),
 ]

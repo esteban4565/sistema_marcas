@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.models import User
@@ -11,6 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
+from urllib.parse import quote_plus
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -229,6 +230,61 @@ class EstudianteDeleteView(LoginRequiredMixin, AdminOnlyMixin, DeleteView):
     model = Estudiante
     template_name = 'users/estudiante_confirm_delete.html'
     success_url = reverse_lazy('estudiante_list')
+
+class PersonalCarnetView(LoginRequiredMixin, AdminOnlyMixin, TemplateView):
+    template_name = 'users/personal_carnet.html'
+
+    @staticmethod
+    def _format_identificacion(identificacion: str) -> str:
+        digits = ''.join(ch for ch in identificacion if ch.isdigit())
+        if len(digits) == 9:
+            return f"{digits[0]}-{digits[1:5]}-{digits[5:]}"
+        return identificacion
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        personal = get_object_or_404(Personal, pk=self.kwargs['pk'])
+        context['personal'] = personal
+        context['full_name'] = f"{personal.nombre} {personal.apellido1} {personal.apellido2 or ''}".strip()
+        context['formatted_identificacion'] = self._format_identificacion(personal.identificacion)
+        context['photo_filename'] = f"img_personal/{personal.identificacion}.jpg"
+        context['qr_url'] = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={quote_plus(personal.identificacion)}"
+        return context
+
+
+class EstudianteCarnetView(LoginRequiredMixin, AdminOnlyMixin, TemplateView):
+    template_name = 'users/estudiante_carnet.html'
+
+    @staticmethod
+    def _format_identificacion(identificacion: str) -> str:
+        digits = ''.join(ch for ch in identificacion if ch.isdigit())
+        if len(digits) == 9:
+            return f"{digits[0]}-{digits[1:5]}-{digits[5:]}"
+        return identificacion
+
+    @staticmethod
+    def _ciclo_por_nivel(nivel: int) -> str:
+        if 7 <= nivel <= 9:
+            return 'Tercer Ciclo'
+        if 10 <= nivel <= 12:
+            return 'Educación diversificada'
+        return ''
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        estudiante = get_object_or_404(Estudiante, pk=self.kwargs['pk'])
+
+        full_name = f"{estudiante.nombre} {estudiante.apellido1} {estudiante.apellido2 or ''}".strip()
+        ciclo = self._ciclo_por_nivel(estudiante.nivel)
+        nivel_grupo = f"{estudiante.nivel}-{estudiante.grupo} ({estudiante.subgrupo}) - {ciclo}" if ciclo else f"{estudiante.nivel}-{estudiante.grupo} ({estudiante.subgrupo})"
+
+        context['estudiante'] = estudiante
+        context['full_name'] = full_name
+        context['formatted_identificacion'] = self._format_identificacion(estudiante.identificacion)
+        context['nivel_grupo_ciclo'] = nivel_grupo
+        context['photo_filename'] = f"img_estudiantes/{estudiante.identificacion}.jpg"
+        context['qr_url'] = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={quote_plus(estudiante.identificacion)}"
+        return context
 
 def buscar_tse(request):
     """Vista para buscar datos en el TSE de Costa Rica"""

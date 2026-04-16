@@ -43,6 +43,7 @@
                             <td>
                                 <a href="{% url 'estudiante_update' e.pk %}" class="btn btn-warning btn-sm">Editar</a>
                                 <a href="{% url 'estudiante_delete' e.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a href="{% url 'estudiante_carnet' e.pk %}" class="btn btn-secondary btn-sm">Carnet</a>
                             </td>
                         </tr>
                         {% endfor %}
