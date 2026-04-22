@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Marcas - Inicio</title>
+    <title>Sistema de Marcas - {{ station_name|default:"Inicio" }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -276,7 +276,7 @@
                 <div class="card-header-custom">
                     <h1>
                         <i class="fas fa-clock"></i>
-                        Sistema de Marcas
+                        {{ station_name|default:"Sistema de Marcas" }}
                     </h1>
                     <div class="time-display" id="currentTime">
                         {{ current_time|date:"d/m/Y H:i:s" }}
@@ -315,7 +315,7 @@
 
                         <div class="info-text">
                             <i class="fas fa-info-circle"></i>
-                            Usa tu identificación para acceder
+                            Estación habilitada para {{ station_name|default:"marcación" }}
                         </div>
                     </form>
                 </div>
@@ -332,7 +332,7 @@
                         <div class="card-header" style="background-color: #003366; color: white;">
                             <h5 class="mb-0">
                                 <i class="fas fa-history"></i>
-                                Últimas Marcas Registradas
+                                Últimas Marcas Registradas - {{ station_name|default:"General" }}
                             </h5>
                         </div>
                         <div class="card-body">

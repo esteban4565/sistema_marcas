@@ -7,4 +7,6 @@ urlpatterns = [
     path('report/personal/download/', views.download_general_personal_pdf, name='download_general_personal_pdf'),
     path('report/<str:person_type>/<str:identificacion>/', views.select_month, name='select_month'),
     path('report/<str:person_type>/<str:identificacion>/download/', views.download_report_pdf, name='download_report_pdf'),
+    path('station-api/<str:station_type>/mark/', views.station_mark_api, name='station_mark_api'),
+    path('station-api/<str:station_type>/recent/', views.station_recent_marks_api, name='station_recent_marks_api'),
 ]

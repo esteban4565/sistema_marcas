@@ -1,12 +1,16 @@
 from io import BytesIO
 from datetime import datetime
+import json
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.urls import reverse
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
@@ -451,3 +455,101 @@ def download_report_pdf(request, person_type, identificacion):
     response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
+
+
+def _is_valid_station_type(station_type):
+    return station_type in ('personal', 'estudiante')
+
+
+def _station_person_model(station_type):
+    from users.models import Personal, Estudiante
+    if station_type == 'personal':
+        return Personal
+    return Estudiante
+
+
+def _get_station_key(station_type):
+    station_keys = getattr(settings, 'STATION_API_KEYS', {})
+    return station_keys.get(station_type, '')
+
+
+def _validate_station_request(request, station_type):
+    if not _is_valid_station_type(station_type):
+        return JsonResponse({'ok': False, 'message': 'Tipo de estación inválido.'}, status=400)
+
+    required_key = _get_station_key(station_type)
+    request_key = request.headers.get('X-Station-Key', '').strip()
+    if not required_key or request_key != required_key:
+        return JsonResponse({'ok': False, 'message': 'Clave de estación inválida.'}, status=401)
+
+    return None
+
+
+def _get_person_name(person):
+    return f'{person.nombre} {person.apellido1} {person.apellido2 or ""}'.strip()
+
+
+def _serialize_recent_marks(station_type, limit=10):
+    PersonModel = _station_person_model(station_type)
+    marcas = Marca.objects.filter(tipo_persona=station_type).order_by('-fecha_hora')[:limit]
+    items = []
+
+    for marca in marcas:
+        person = PersonModel.objects.filter(identificacion=marca.identificacion).first()
+        items.append({
+            'identificacion': marca.identificacion,
+            'nombre_completo': _get_person_name(person) if person else marca.identificacion,
+            'fecha_hora': timezone.localtime(marca.fecha_hora).strftime('%d/%m/%Y %H:%M:%S'),
+        })
+    return items
+
+
+@csrf_exempt
+@require_POST
+def station_mark_api(request, station_type):
+    error_response = _validate_station_request(request, station_type)
+    if error_response:
+        return error_response
+
+    identificacion = request.POST.get('identificacion', '').strip()
+    if not identificacion and request.body:
+        try:
+            payload = json.loads(request.body.decode('utf-8'))
+            identificacion = str(payload.get('identificacion', '')).strip()
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            identificacion = ''
+
+    if not identificacion:
+        return JsonResponse({'ok': False, 'message': 'Debe enviar una identificación válida.'}, status=400)
+
+    PersonModel = _station_person_model(station_type)
+    person = PersonModel.objects.filter(identificacion=identificacion).first()
+    if not person:
+        return JsonResponse({
+            'ok': False,
+            'message': f'La identificación {identificacion} no pertenece a esta estación.'
+        }, status=404)
+
+    marca = Marca.objects.create(identificacion=identificacion, tipo_persona=station_type)
+    return JsonResponse({
+        'ok': True,
+        'message': f'Marca registrada para {_get_person_name(person)}',
+        'marca': {
+            'id': marca.id,
+            'identificacion': marca.identificacion,
+            'fecha_hora': timezone.localtime(marca.fecha_hora).strftime('%d/%m/%Y %H:%M:%S'),
+        }
+    })
+
+
+@require_GET
+def station_recent_marks_api(request, station_type):
+    error_response = _validate_station_request(request, station_type)
+    if error_response:
+        return error_response
+
+    return JsonResponse({
+        'ok': True,
+        'station_type': station_type,
+        'items': _serialize_recent_marks(station_type),
+    })

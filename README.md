@@ -19,3 +19,10 @@ Aplicación web en Django para marcar asistencias de docentes, administrativos y
 
 - Base de datos: SQLite (por defecto).
 - Autenticación requerida para marcar asistencia.
+
+## Modo Hibrido: Web Admin + Estaciones Windows
+
+- La administracion continua en interfaz web (Django): `/users/roles/`, `/users/`, `/attendance/`, etc.
+- Las estaciones de marcacion pueden ejecutarse como app Windows:
+	- `desktop/station_app.py`
+	- Guía completa: `desktop/README_windows_stations.md`

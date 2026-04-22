@@ -13,71 +13,90 @@ from datetime import datetime
 import re
 from urllib.parse import quote_plus
 
-class IndexView(TemplateView):
+class StationSelectorView(TemplateView):
+    template_name = 'users/select_station.html'
+
+
+class MarkingStationBaseView(TemplateView):
     template_name = 'index.html'
-    
+    station_type = None
+    station_name = ''
+
+    def get_success_url_name(self):
+        return 'home'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_time'] = datetime.now()
-        
-        # Obtener las últimas 10 marcas con información de las personas
+        context['station_name'] = self.station_name
+        context['station_type'] = self.station_type
+
         from attendance.models import Marca
-        from .models import Personal, Estudiante
-        
-        ultimas_marcas = Marca.objects.select_related().order_by('-fecha_hora')[:10]
+        ultimas_marcas = Marca.objects.filter(tipo_persona=self.station_type).order_by('-fecha_hora')[:10]
         marcas_con_info = []
-        
+
         for marca in ultimas_marcas:
-            persona_info = {
+            persona = self.get_persona_by_identificacion(marca.identificacion)
+            marcas_con_info.append({
                 'identificacion': marca.identificacion,
                 'fecha_hora': marca.fecha_hora,
                 'tipo_persona': marca.tipo_persona,
-                'nombre_completo': marca.identificacion  # fallback
-            }
-            
-            # Buscar información de la persona
-            if marca.tipo_persona == 'personal':
-                try:
-                    persona = Personal.objects.get(identificacion=marca.identificacion)
-                    persona_info['nombre_completo'] = f"{persona.nombre} {persona.apellido1} {persona.apellido2 or ''}".strip()
-                except Personal.DoesNotExist:
-                    pass
-            elif marca.tipo_persona == 'estudiante':
-                try:
-                    persona = Estudiante.objects.get(identificacion=marca.identificacion)
-                    persona_info['nombre_completo'] = f"{persona.nombre} {persona.apellido1} {persona.apellido2 or ''}".strip()
-                except Estudiante.DoesNotExist:
-                    pass
-            
-            marcas_con_info.append(persona_info)
-        
+                'nombre_completo': self.get_nombre_persona(persona, marca.identificacion),
+            })
+
         context['ultimas_marcas'] = marcas_con_info
         return context
-    
+
+    def get_persona_by_identificacion(self, identificacion):
+        if self.station_type == 'personal':
+            return Personal.objects.filter(identificacion=identificacion).first()
+        return Estudiante.objects.filter(identificacion=identificacion).first()
+
+    @staticmethod
+    def get_nombre_persona(persona, fallback):
+        if not persona:
+            return fallback
+        return f"{persona.nombre} {persona.apellido1} {persona.apellido2 or ''}".strip()
+
     def post(self, request, *args, **kwargs):
         identificacion = request.POST.get('identification', '').strip()
-        if identificacion:
-            from attendance.models import Marca
-            # Crear la marca
-            marca = Marca.objects.create(identificacion=identificacion)
-            # Verificar si existe la persona
-            from .models import Personal, Estudiante
-            persona = None
-            if Personal.objects.filter(identificacion=identificacion).exists():
-                persona = Personal.objects.get(identificacion=identificacion)
-                marca.tipo_persona = 'personal'
-                marca.save()
-            elif Estudiante.objects.filter(identificacion=identificacion).exists():
-                persona = Estudiante.objects.get(identificacion=identificacion)
-                marca.tipo_persona = 'estudiante'
-                marca.save()
-            
-            # Mensaje de éxito
-            messages.success(request, f"Marca registrada exitosamente para {persona.nombre if persona else identificacion}")
-        else:
+        if not identificacion:
             messages.error(request, "Por favor ingrese una identificación válida")
-        
-        return redirect('home')
+            return redirect(self.get_success_url_name())
+
+        persona = self.get_persona_by_identificacion(identificacion)
+        if not persona:
+            messages.error(
+                request,
+                f"La identificación {identificacion} no pertenece a esta estación de {self.station_name.lower()}."
+            )
+            return redirect(self.get_success_url_name())
+
+        from attendance.models import Marca
+        Marca.objects.create(identificacion=identificacion, tipo_persona=self.station_type)
+        messages.success(request, f"Marca registrada exitosamente para {persona.nombre}")
+        return redirect(self.get_success_url_name())
+
+
+class PersonalMarkView(MarkingStationBaseView):
+    station_type = 'personal'
+    station_name = 'Personal (Docentes y Administrativos)'
+
+    def get_success_url_name(self):
+        return 'home_personal'
+
+
+class HomePersonalMarkView(PersonalMarkView):
+    def get_success_url_name(self):
+        return 'home'
+
+
+class StudentMarkView(MarkingStationBaseView):
+    station_type = 'estudiante'
+    station_name = 'Estudiantes'
+
+    def get_success_url_name(self):
+        return 'home_estudiantes'
 
 class AdminOnlyMixin(UserPassesTestMixin):
     def test_func(self):
